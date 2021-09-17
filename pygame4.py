@@ -10,14 +10,12 @@ class Laser(pygame.sprite.Sprite):
     def update(self):
         self.rect.y -= 5
 
-
 class Meteor(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load('C:/Users/User/Downloads/KemonitoJuega/mascarita.png').convert()
         self.image.set_colorkey(negro)
         self.rect = self.image.get_rect()
-
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -31,9 +29,11 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = mouse_pos[0]
         self.rect.y = 450
 
-    
 negro = 0,0,0
 blanco = 255,255,255
+pygame.init()
+pygame.mixer.music.load('C:/Users/User/Downloads/KemonitoJuega/luchadores2.mp3')
+pygame.mixer.music.play(1)
 
 def main():
     
@@ -43,10 +43,15 @@ def main():
     clock = pygame.time.Clock()
     run = True
     score = 0
+    
+    width = 1140
+    height = 600
+    i = 0
 
-    fondo = pygame.image.load('C:/Users/User/Downloads/KemonitoJuega/ringg.jpg')
+    fondo = pygame.image.load('C:/Users/User/Downloads/KemonitoJuega/RingSolo.jpg')
     fondorect = fondo.get_rect();
-
+    bg = pygame.transform.scale(fondo, (1140,600) )
+    
     all_sprite_list = pygame.sprite.Group()
     meteor_list = pygame.sprite.Group()
     laser_list = pygame.sprite.Group()
@@ -55,7 +60,6 @@ def main():
         meteor = Meteor()
         meteor.rect.x = random.randrange(1000)
         meteor.rect.y = random.randrange(200)
-        #mov=meteor.rect()
         
         meteor_list.add(meteor)
         all_sprite_list.add(meteor)
@@ -64,6 +68,10 @@ def main():
     all_sprite_list.add(player)
     fuente = pygame.font.Font(None, 50) #Tipo de fuente por default
     texto = fuente.render("Jugador 1", 0, (100,100,0)) #el segundo parametro es el borde y la ultima es el color
+
+    speed=[1,1]
+    
+    sound = pygame.mixer.Sound('C:/Users/User/Downloads/KemonitoJuega/bonk2.mp3')
 
     while run:
         for event in pygame.event.get(): #se captura el evento que se produce
@@ -77,6 +85,7 @@ def main():
 
                 all_sprite_list.add(laser)
                 laser_list.add(laser)
+                sound.play()
     
         all_sprite_list.update()
         
@@ -101,10 +110,20 @@ def main():
                 all_sprite_list.remove(laser)
                 laser_list.remove(laser)
         
+        screen.fill((0,0,0))
+        screen.blit(bg, (i,0))
+        screen.blit(bg, (width+i,0))
+
+        if i == -width:
+            screen.blit(bg, (width+i, 0))
+            i = 0
+
+        i -= 3
+        
+        
         if(score==20 or len(meteor_list)==0):
             main()
         
-        screen.blit(fondo, fondorect)
         marcador1 = fuente.render("Score:"+str(score), 0, (100,100,0))
         screen.blit(marcador1, (950, 40))
         all_sprite_list.draw(screen) #se pintan todos los sprites
